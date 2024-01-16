@@ -1,0 +1,29 @@
+﻿@page "/settingsWindow"
+@inject NavigationManager Navigation
+
+<div>
+	<MudList class="scrollable-list">
+		<MudSwitch Label="Dark Mode" CheckedChanged="ChangeTheme" Checked="@AppPreferences.IsDarkTheme" T="bool" />
+		@{
+			for (int i = 0; i < 20; i++)
+			{
+				<MudSwitch Label="@(i.ToString())" T="bool" />
+			}
+		}
+		<MudPaper Style="text-align: center;">SyncSpace, версия @appVersion</MudPaper>
+	</MudList>
+</div>
+
+@code {
+	string appVersion = Application.Current.GetType().Assembly.GetName().Version.ToString();
+}
+
+
+<style>
+	.scrollable-list {
+		position: absolute;
+		overflow: auto;
+		height: calc(100vh - 68px);
+		width: 100%;
+	}
+</style>

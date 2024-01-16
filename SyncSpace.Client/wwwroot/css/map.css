@@ -1,0 +1,841 @@
+/* required styles */
+path.map-interactive {
+    stroke: #0d6efd;
+    fill: #0a58ca;
+    stroke-width: 4px;
+    paint-order: stroke;
+}
+
+.noanim { /* needed for transitions disabling in some places because javascript is dumb */
+    transition: none !important;
+}
+
+::-webkit-scrollbar-thumb {
+    border-radius: 8px !important;
+}
+
+::-webkit-scrollbar-track {
+    width: 8px !important;
+}
+
+#trigger-button {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+}
+
+.map-pane,
+.map-tile,
+.map-marker-icon,
+.map-marker-shadow,
+.map-tile-container,
+.map-pane > svg,
+.map-pane > canvas,
+.map-zoom-box,
+.map-image-layer,
+.map-layer {
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.map-marker-pane,
+.map-marker-icon,
+.map-marker-shadow {
+    transition: 1s; /* smooth marker movement*/
+    animation-timing-function: ease-in-out;
+}
+
+.map-marker-icon {
+    transform: rotate(45deg) !important;
+    border-radius: 50px !important;
+    padding: 3px;
+    width: 100% !important;
+    height: 100% !important;
+    margin: 0 !important;
+}
+
+.map-marker-parent {
+    position: absolute;
+    transition: 0.3s; /*smooth marker movement*/
+    animation-timing-function: ease-in-out;
+    top: -120px;
+    left: -50px;
+    z-index: 299;
+    width: 100px;
+    height: 100px;
+    transform: translate3d(151px, 299px, 0px);
+}
+
+.user-marker {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: var(--mud-palette-background);
+    border: 4px solid #5682C3;
+    transform-origin: center;
+    transform: rotate(-45deg);
+    border-radius: 50% 50% 50% 5%;
+}
+
+.vertex-marker {
+    transition: 0.3s; /*smooth marker movement*/
+    animation-timing-function: ease-in-out;
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    top: -15px;
+    left: -15px;
+    background: white;
+    border: 4px solid #5682C3;
+    transform-origin: bottom center;
+    border-radius: 50%;
+}
+
+.map-marker-draggable {
+    text-align: center;
+    font-size: 42px;
+    line-height: 0.38;
+}
+
+.map-container {
+    overflow: hidden;
+}
+
+.map-tile,
+.map-marker-icon,
+.map-marker-shadow {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+    /* Prevents IE11 from highlighting tiles in blue */
+    .map-tile::selection {
+        background: transparent;
+    }
+/* Safari renders non-retina tile on retina better with this, but Chrome is worse */
+.map-safari .map-tile {
+    image-rendering: -webkit-optimize-contrast;
+}
+/* hack that prevents hw layers "stretching" when loading new tiles */
+.map-safari .map-tile-container {
+    width: 1600px;
+    height: 1600px;
+    -webkit-transform-origin: 0 0;
+}
+
+.map-marker-icon,
+.map-marker-shadow {
+    display: block;
+}
+/* .map-container svg: reset svg max-width decleration shipped in Joomla! (joomla.org) 3.x */
+/* .map-container img: map is broken in FF if you have max-width: 100% on tiles */
+.map-container .map-overlay-pane svg,
+.map-container .map-marker-pane img,
+.map-container .map-shadow-pane img,
+.map-container .map-tile-pane img,
+.map-container img.map-image-layer,
+.map-container .map-tile {
+    max-width: none !important;
+    max-height: none !important;
+}
+
+.map-container.map-touch-zoom {
+    -ms-touch-action: pan-x pan-y;
+    touch-action: pan-x pan-y;
+}
+
+.map-container.map-touch-drag {
+    -ms-touch-action: pinch-zoom;
+    /* Fallback for FF which doesn't support pinch-zoom */
+    touch-action: none;
+    touch-action: pinch-zoom;
+}
+
+    .map-container.map-touch-drag.map-touch-zoom {
+        -ms-touch-action: none;
+        touch-action: none;
+    }
+
+.map-container {
+    -webkit-tap-highlight-color: transparent;
+}
+
+    .map-container a {
+        -webkit-tap-highlight-color: rgba(51, 181, 229, 0.4);
+    }
+
+.map-tile {
+    filter: inherit;
+    visibility: hidden;
+}
+
+.map-tile-loaded {
+    visibility: inherit;
+}
+
+.map-zoom-box {
+    width: 0;
+    height: 0;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    z-index: 800;
+}
+/* workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=888319 */
+.map-overlay-pane svg {
+    -moz-user-select: none;
+}
+
+.map-pane {
+    z-index: 400;
+}
+
+.map-tile-pane {
+    z-index: 200;
+}
+
+.map-overlay-pane {
+    z-index: 400;
+}
+
+.map-shadow-pane {
+    z-index: 500;
+}
+
+.map-marker-pane {
+    z-index: 600;
+}
+
+.map-tooltip-pane {
+    z-index: 650;
+}
+
+.map-popup-pane {
+    z-index: 700;
+}
+
+.map-map-pane canvas {
+    z-index: 100;
+}
+
+.map-map-pane svg {
+    z-index: 200;
+}
+
+.map-vml-shape {
+    width: 1px;
+    height: 1px;
+}
+
+.lvml {
+    behavior: url(#default#VML);
+    display: inline-block;
+    position: absolute;
+}
+
+/* control positioning */
+
+.map-control {
+    position: relative;
+    z-index: 800;
+    pointer-events: visiblePainted; /* IE 9-10 doesn't have auto */
+    pointer-events: auto;
+}
+
+.map-top,
+.map-bottom {
+    position: absolute;
+    z-index: 1000;
+    pointer-events: none;
+}
+
+.map-top {
+    top: 50vh;
+}
+
+.map-right {
+    right: 5px;
+}
+
+.map-bottom {
+    bottom: 0;
+}
+
+.map-left {
+    right: 5px;
+}
+
+.map-control {
+    float: left;
+    clear: both;
+}
+
+.map-right .map-control {
+    float: right;
+}
+
+.map-top .map-control {
+    margin-top: 10px;
+}
+
+.map-bottom .map-control {
+    margin-bottom: 10px;
+}
+
+.map-left .map-control {
+    margin-left: 10px;
+}
+
+.map-right .map-control {
+    margin-right: 10px;
+}
+
+/* zoom and fade animations */
+
+.map-fade-anim .map-tile {
+    will-change: opacity;
+}
+
+.map-fade-anim .map-popup {
+    opacity: 0;
+    -webkit-transition: opacity 0.2s linear;
+    -moz-transition: opacity 0.2s linear;
+    transition: opacity 0.2s linear;
+}
+
+.map-fade-anim .map-map-pane .map-popup {
+    opacity: 1;
+}
+
+.map-zoom-animated {
+    -webkit-transform-origin: 0 0;
+    -ms-transform-origin: 0 0;
+    transform-origin: 0 0;
+}
+
+.map-zoom-anim .map-zoom-animated {
+    will-change: transform;
+}
+
+.map-zoom-anim .map-zoom-animated {
+    -webkit-transition: -webkit-transform 0.25s cubic-bezier(0,0,0.25,1);
+    -moz-transition: -moz-transform 0.25s cubic-bezier(0,0,0.25,1);
+    transition: transform 0.25s cubic-bezier(0,0,0.25,1);
+}
+
+.map-zoom-anim .map-tile,
+.map-pan-anim .map-tile {
+    -webkit-transition: none;
+    -moz-transition: none;
+    transition: none;
+}
+
+.map-zoom-anim .map-zoom-hide {
+    visibility: hidden;
+}
+
+/* cursors */
+
+.map-interactive {
+    cursor: pointer;
+}
+
+.map-grab {
+    cursor: -webkit-grab;
+    cursor: -moz-grab;
+    cursor: grab;
+}
+
+.map-crosshair,
+.map-crosshair .map-interactive {
+    cursor: crosshair;
+}
+
+.map-popup-pane,
+.map-control {
+    cursor: auto;
+}
+
+.map-dragging .map-grab,
+.map-dragging .map-grab .map-interactive,
+.map-dragging .map-marker-draggable {
+    cursor: move;
+    cursor: -webkit-grabbing;
+    cursor: -moz-grabbing;
+    cursor: grabbing;
+}
+
+/* marker & overlays interactivity */
+.map-marker-icon,
+.map-marker-shadow,
+.map-image-layer,
+.map-pane > svg path,
+.map-tile-container {
+    pointer-events: none;
+}
+
+    .map-marker-icon.map-interactive,
+    .map-image-layer.map-interactive,
+    .map-pane > svg path.map-interactive,
+    svg.map-image-layer.map-interactive path {
+        pointer-events: visiblePainted; /* IE 9-10 doesn't have auto */
+        pointer-events: auto;
+    }
+
+/* visual tweaks */
+
+.map-container {
+    background: #ddd;
+    outline: 0;
+}
+
+    .map-container a {
+        color: #0078A8;
+    }
+
+        .map-container a.map-active {
+            outline: 2px solid orange;
+        }
+
+.map-zoom-box {
+    border: 2px dotted #38f;
+    background: rgba(255,255,255,0.5);
+}
+
+/* general typography */
+.map-container {
+    font: 12px/1.5 "Helvetica Neue", Arial, Helvetica, sans-serif;
+}
+
+/* general toolbar styles */
+
+.map-bar {
+    border: solid 1px black;
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+    .map-bar a,
+    .map-bar a:hover {
+        background-color: #fff;
+        border-bottom: 1px solid #ccc;
+        width: 26px;
+        height: 26px;
+        line-height: 26px;
+        display: block;
+        text-align: center;
+        text-decoration: none;
+        color: black;
+    }
+
+    .map-bar a,
+    .map-control-layers-toggle {
+        background-position: 50% 50%;
+        background-repeat: no-repeat;
+        display: block;
+    }
+
+        .map-bar a:hover {
+            background-color: #f4f4f4;
+        }
+
+        .map-bar a:first-child {
+            border-top-left-radius: 4px;
+            border-top-right-radius: 4px;
+        }
+
+        .map-bar a:last-child {
+            border-bottom-left-radius: 4px;
+            border-bottom-right-radius: 4px;
+            border-bottom: none;
+        }
+
+        .map-bar a.map-disabled {
+            cursor: default;
+            background-color: #f4f4f4;
+            color: #bbb;
+        }
+
+.map-touch .map-bar a {
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+}
+
+    .map-touch .map-bar a:first-child {
+        border-top-left-radius: 2px;
+        border-top-right-radius: 2px;
+    }
+
+    .map-touch .map-bar a:last-child {
+        border-bottom-left-radius: 2px;
+        border-bottom-right-radius: 2px;
+    }
+
+/* zoom control */
+
+@keyframes hover_anim {
+    0% {
+        filter: brightness(1);
+    }
+
+    100% {
+        filter: brightness(0.1);
+    }
+}
+
+.map-control-zoom-in,
+.map-control-zoom-out {
+    font: bold 18px 'Lucida Console', Monaco, monospace;
+    text-indent: 1px;
+    filter: brightness(1);
+    transition: 0.3s;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+    .map-control-zoom-in:hover,
+    .map-control-zoom-out:hover {
+        filter: brightness(0.8);
+    }
+
+.map-touch .map-control-zoom-in, .map-touch .map-control-zoom-out {
+    font-size: 22px;
+}
+
+/* layers control */
+
+.map-control-layers {
+    box-shadow: 0 1px 5px rgba(0,0,0,0.4);
+    background: #fff;
+    border-radius: 5px;
+}
+
+.map-control-layers-toggle {
+    background-image: url(images/layers.png);
+    width: 36px;
+    height: 36px;
+}
+
+.map-retina .map-control-layers-toggle {
+    background-image: url(images/layers-2x.png);
+    background-size: 26px 26px;
+}
+
+.map-touch .map-control-layers-toggle {
+    width: 44px;
+    height: 44px;
+}
+
+.map-control-layers .map-control-layers-list,
+.map-control-layers-expanded .map-control-layers-toggle {
+    display: none;
+}
+
+.map-control-layers-expanded .map-control-layers-list {
+    display: block;
+    position: relative;
+}
+
+.map-control-layers-expanded {
+    padding: 6px 10px 6px 6px;
+    color: #333;
+    background: #fff;
+}
+
+.map-control-layers-scrollbar {
+    overflow-y: scroll;
+    overflow-x: hidden;
+    padding-right: 5px;
+}
+
+.map-control-layers-selector {
+    margin-top: 2px;
+    position: relative;
+    top: 1px;
+}
+
+.map-control-layers label {
+    display: block;
+}
+
+.map-control-layers-separator {
+    height: 0;
+    border-top: 1px solid #ddd;
+    margin: 5px -10px 5px -6px;
+}
+
+/* Default icon URLs */
+.map-default-icon-path {
+    background-image: url(images/marker-icon.png);
+}
+
+/* attribution and scale controls */
+
+.map-container .map-control-attribution {
+    background: #fff;
+    background: rgba(255, 255, 255, 0.7);
+    margin: 0;
+}
+
+.map-control-attribution,
+.map-control-scale-line {
+    padding: 0 5px;
+    color: #333;
+}
+
+    .map-control-attribution a {
+        text-decoration: none;
+    }
+
+        .map-control-attribution a:hover {
+            text-decoration: underline;
+        }
+
+.map-container .map-control-attribution,
+.map-container .map-control-scale {
+    font-size: 11px;
+}
+
+.map-left .map-control-scale {
+    margin-left: 5px;
+}
+
+.map-bottom .map-control-scale {
+    margin-bottom: 5px;
+}
+
+.map-control-scale-line {
+    border: 2px solid #777;
+    border-top: none;
+    line-height: 1.1;
+    padding: 2px 5px 1px;
+    font-size: 11px;
+    white-space: nowrap;
+    overflow: hidden;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    background: #fff;
+    background: rgba(255, 255, 255, 0.5);
+}
+
+    .map-control-scale-line:not(:first-child) {
+        border-top: 2px solid #777;
+        border-bottom: none;
+        margin-top: -2px;
+    }
+
+        .map-control-scale-line:not(:first-child):not(:last-child) {
+            border-bottom: 2px solid #777;
+        }
+
+.map-touch .map-control-attribution,
+.map-touch .map-control-layers,
+.map-touch .map-bar {
+    box-shadow: none;
+}
+
+.map-touch .map-control-layers,
+.map-touch .map-bar {
+    border: 2px solid rgba(0,0,0,0.2);
+    background-clip: padding-box;
+}
+
+/* popup */
+
+.map-popup {
+    position: absolute;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.map-popup-content-wrapper {
+    padding: 1px;
+    text-align: left;
+    border-radius: 12px;
+}
+
+.map-popup-content {
+    margin: 13px 19px;
+    line-height: 1.4;
+}
+
+    .map-popup-content p {
+        margin: 18px 0;
+    }
+
+.map-popup-tip-container {
+    width: 40px;
+    height: 20px;
+    position: absolute;
+    left: 50%;
+    margin-left: -20px;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.map-popup-tip {
+    width: 17px;
+    height: 17px;
+    padding: 1px;
+    margin: -10px auto 0;
+    -webkit-transform: rotate(45deg);
+    -moz-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+}
+
+.map-popup-content-wrapper,
+.map-popup-tip {
+    background: white;
+    color: #333;
+    box-shadow: 0 3px 14px rgba(0,0,0,0.4);
+}
+
+.map-container a.map-popup-close-button {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 4px 4px 0 0;
+    border: none;
+    text-align: center;
+    width: 18px;
+    height: 14px;
+    font: 16px/14px Tahoma, Verdana, sans-serif;
+    color: #c3c3c3;
+    text-decoration: none;
+    font-weight: bold;
+    background: transparent;
+}
+
+    .map-container a.map-popup-close-button:hover {
+        color: #999;
+    }
+
+.map-popup-scrolled {
+    overflow: auto;
+    border-bottom: 1px solid #ddd;
+    border-top: 1px solid #ddd;
+}
+
+.map-oldie .map-popup-content-wrapper {
+    -ms-zoom: 1;
+}
+
+.map-oldie .map-popup-tip {
+    width: 24px;
+    margin: 0 auto;
+    -ms-filter: "progid:DXImageTransform.Microsoft.Matrix(M11=0.70710678, M12=0.70710678, M21=-0.70710678, M22=0.70710678)";
+    filter: progid:DXImageTransform.Microsoft.Matrix(M11=0.70710678, M12=0.70710678, M21=-0.70710678, M22=0.70710678);
+}
+
+.map-oldie .map-popup-tip-container {
+    margin-top: -1px;
+}
+
+.map-oldie .map-control-zoom,
+.map-oldie .map-control-layers,
+.map-oldie .map-popup-content-wrapper,
+.map-oldie .map-popup-tip {
+    border: 1px solid #999;
+}
+
+/* div icon */
+
+.map-div-icon {
+    background: #fff;
+    border: 1px solid #666;
+}
+
+/* Tooltip */
+/* Base styles for the element that has a tooltip */
+.map-tooltip {
+    position: absolute;
+    padding: 6px;
+    background-color: #fff;
+    border: 1px solid #fff;
+    border-radius: 3px;
+    color: #222;
+    white-space: nowrap;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    pointer-events: none;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+}
+
+    .map-tooltip.map-clickable {
+        cursor: pointer;
+        pointer-events: auto;
+    }
+
+.map-tooltip-top:before,
+.map-tooltip-bottom:before,
+.map-tooltip-left:before,
+.map-tooltip-right:before {
+    position: absolute;
+    pointer-events: none;
+    border: 6px solid transparent;
+    background: transparent;
+    content: "";
+}
+
+/* Directions */
+
+.map-tooltip-bottom {
+    margin-top: 6px;
+}
+
+.map-tooltip-top {
+    margin-top: -6px;
+}
+
+    .map-tooltip-bottom:before,
+    .map-tooltip-top:before {
+        left: 50%;
+        margin-left: -6px;
+    }
+
+    .map-tooltip-top:before {
+        bottom: 0;
+        margin-bottom: -12px;
+        border-top-color: #fff;
+    }
+
+.map-tooltip-bottom:before {
+    top: 0;
+    margin-top: -12px;
+    margin-left: -6px;
+    border-bottom-color: #fff;
+}
+
+.map-tooltip-left {
+    margin-left: -6px;
+}
+
+.map-tooltip-right {
+    margin-left: 6px;
+}
+
+    .map-tooltip-left:before,
+    .map-tooltip-right:before {
+        top: 50%;
+        margin-top: -6px;
+    }
+
+.map-tooltip-left:before {
+    right: 0;
+    margin-right: -12px;
+    border-left-color: #fff;
+}
+
+.map-tooltip-right:before {
+    left: 0;
+    margin-left: -12px;
+    border-right-color: #fff;
+}

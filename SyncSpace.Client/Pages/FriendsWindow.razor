@@ -1,0 +1,164 @@
+﻿@page "/friends"
+@inject NavigationManager Navigation
+@inject IUserInformation AuthorizedUser
+@inject IMapLocation MapLocation
+@using MudBlazor;
+@using SyncSpace.Client.Enums;
+@using SyncSpace.Client.Services;
+@using SyncSpace.Database.Contexts;
+@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+@using System.Text;
+@using System.Threading.Tasks;
+@using Db = SyncSpace.Database.Entities;
+@using MudBlazor.Components;
+@using System.ComponentModel;
+@using static MudBlazor.CategoryTypes;
+<div class="container-column">
+	<div class="container" style="padding-left: 0;">
+		<button style="min-width: 30px;" @onclick="OpenMap">
+			<MudIcon Icon="@Icons.Material.Filled.ArrowBack" />
+		</button>
+		<div>
+			<MudSelect PopoverClass="sortwho" OpenIcon="@Icons.Material.Filled.KeyboardArrowDown"
+					   CloseIcon="@Icons.Material.Filled.KeyboardArrowUp" DisableUnderLine="true"
+					   T="SortWho" TransformOrigin="Origin.TopLeft" AnchorOrigin="Origin.TopLeft"
+					   ValueChanged="HandleOptionChanged" Dense="true" OnClose="OnClose" OnOpen="OnOpen">
+				@foreach (var type in Enum.GetValues(typeof(SortWho)).Cast<SortWho>().ToList())
+				{
+					<MudSelectItem Value="type">
+						<div style="display: flex; flex-direction: row; align-items: center;">
+							<div>@GetDescription(type,"SortWho")</div>
+							<div style="margin-left: 8px;" hidden="@_isHidennCount">@GetCountDescription(type)</div>
+						</div>
+					</MudSelectItem>
+				}
+			</MudSelect>
+		</div>
+	</div>
+	<MudTextField T="string" Style=" border-radius: 10px;letter-spacing:initial; height: 30px;padding: 5px;" DisableUnderLine="true" Placeholder="Search"
+				  Lines="0" Variant="Variant.Text" Margin="Margin.Dense" ValueChanged="OnValueChanged"
+				  Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small" />
+	<div class="container">
+		<div style=" display: flex; align-items: center;">
+			<div>Sort by:</div>
+			<div>
+				<MudSelect OpenIcon="@Icons.Material.Filled.KeyboardArrowDown"
+						   CloseIcon="@Icons.Material.Filled.KeyboardArrowUp" DisableUnderLine="true"
+						   T="SortType" TransformOrigin="Origin.TopLeft" AnchorOrigin="Origin.TopLeft"
+						   ValueChanged="HandleOptionChanged" Dense="true">
+
+					@foreach (var type in Enum.GetValues(typeof(SortType)).Cast<SortType>().ToList())
+					{
+						<div>
+							<MudSelectItem Value=type><div style="display: flex; flex-direction: row; align-items: center;">@GetDescription(type,"SortType")</div></MudSelectItem>
+						</div>
+					}
+				</MudSelect>
+			</div>
+		</div>
+		<button style="min-width: 30px;" @onclick=" ()=> OnDescendingClick()">
+			<MudIcon Size="Size.Medium" Icon="@Icons.Material.Filled.Sort" Style="@((_SortDescendStyle ? "transform: rotate(180deg) scaleX(-1);":string.Empty) + "transition: 0.5s;")" />
+		</button>
+	</div>
+
+	@if (SearchResult != null)
+	{
+		@foreach (var friend in SearchResult)
+		{
+			<MudListItem Style="padding-left:0px">
+				<div class="container">
+					<MudAvatar Style="height:48px; width:48px;" Image=@friend.Avatar.Source></MudAvatar>
+					<div style="margin-left: 10px;font-size: 20px;">
+						@friend.Name
+					</div>
+					<div style="position:absolute;right:0;top:17px">
+						<button @onclick="()=>MoveTo(friend)"><MudIcon Color="Color.Primary" Size="Size.Medium" Icon="@MyIcons.Custom.Brands.Chat" /> </button>
+
+						<MudMenu Color="Color.Primary" Style="padding-left: 0px;padding-right: 16px;padding:0px!important;margin:0px!important; position: relative;top: 7px;" Dense AnchorOrigin="Origin.TopRight" Icon="@Icons.Material.Filled.MoreVert">
+						@if (_SortWhoCategory == SortWho.Friends)
+							{
+								<MudMenuItem> <button @onclick="()=>MoveTo(friend)"><MudIcon Color="Color.Primary" style="margin-right: 16px;margin-left:16px" Size="Size.Medium" Icon="@MyIcons.Custom.Brands.Person" /><div style="font-size:15px"> Moves to</div></button></MudMenuItem>
+								<MudMenuItem> <button @onclick="()=>DeleteFriend(friend)"><MudIcon Color="Color.Primary" style="margin-right: 16px;margin-left:16px" Size="Size.Medium" Icon="@MyIcons.Custom.Brands.Delete" /><div style="font-size:15px"> Delete</div></button></MudMenuItem>
+
+							}
+							@if (_SortWhoCategory == SortWho.Send_requests)
+							{
+								<MudMenuItem> <button @onclick="()=> CancelRequest(friend)"><MudIcon Color="Color.Primary" style="margin-right: 16px;margin-left:16px" Size="Size.Large" Icon="@Icons.Material.Filled.Reply" />Cancel</button></MudMenuItem>
+
+							}
+							@if (_SortWhoCategory == SortWho.Requests)
+							{
+								<MudMenuItem> <button style="margin-right: 5px;" @onclick=" ()=> AcceptFriend(friend)"><MudIcon Color="Color.Primary" style="margin-right: 16px;margin-left:16px" Size="Size.Large" Icon="@Icons.Material.Filled.PersonPin" /> <div style="font-size:22px">Accept</div></button></MudMenuItem>
+								<MudMenuItem> <button style="margin-right: 5px;" @onclick=" ()=> RejectFriend(friend)"><MudIcon Color="Color.Primary" style="margin-right: 16px;margin-left:16px" Size="Size.Large" Icon="@Icons.Material.Filled.Delete" />   <div style="font-size:22px">Reject</div></button></MudMenuItem>
+
+							}
+						</MudMenu>
+
+					</div>
+				</div>
+			</MudListItem>
+		}
+	}
+</div>
+<style>
+	.container {
+		display: flex;
+		align-items: center;
+	}
+
+
+	.container-column {
+		display: flex;
+		flex-direction: column;
+		padding: 10px;
+	}
+
+
+	.mud-popover-provider > .mud-popover {
+		width: auto !important;
+		max-width: unset !important;
+	}
+
+	.mud-list.mud-list-padding {
+		padding-top: 5px !important;
+		padding-bottom: 5px !important;
+	}
+
+	.mud-icon-button {
+		padding: 0px !important;
+	}
+
+	.mud-input-control-input-container {
+		/* background-color: transparent;*/
+		border-radius: 10px;
+		padding: 0 8px;
+	}
+
+	.mud-list-item-gutters {
+		padding-left: 16px;
+		padding-right: 16px;
+	}
+
+	.mud-list-item {
+		border-radius: 16px;
+	}
+
+	.mud-list > .mud-list-item > .mud-list-item-text > .mud-typography > button > .mud-icon-root {
+		margin-left: 0 !important;
+	}
+
+	.sortwho .mud-list-item {
+		font-size: 12px !important;
+	}
+
+	.mud-list .mud-input-slot {
+		display: flex;
+		align-items: center;
+	}
+
+	.mud-typography-body2 {
+		font-size: unset;
+	}
+</style>

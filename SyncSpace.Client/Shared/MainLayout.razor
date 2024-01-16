@@ -1,0 +1,92 @@
+﻿@using SyncSpace.Client.Services;
+@inherits LayoutComponentBase
+@inject IUserInformation AuthorizedUser
+<MudThemeProvider Theme="@_Theme"/>
+<MudDialogProvider FullWidth="true" MaxWidth="MaxWidth.ExtraSmall" />
+<MudSnackbarProvider />
+
+@if(AuthorizedUser.User != null)
+{
+	<NavMenu />
+}
+
+@Body
+@code
+{
+	[Inject]
+	private AppPreferences AppPreferences { get; init; }
+
+
+	public MudTheme _Theme;
+	private readonly MudTheme _lightTheme = new MudTheme()
+		{
+			Palette = new Palette()
+			{
+				//Primary #4a69bd
+				//Secondary #F4F6FB
+				//Accent #7187CC
+
+				Black = "#27272f",
+				Background = "#fff",
+				//BackgroundGrey = "#27272f",
+				Primary = "#4a69bd",
+				PrimaryDarken = "#243461",
+				Secondary = "#fff",
+				Surface = "#f5f5f5",
+				DrawerBackground = "#27272f",
+				DrawerText = "rgba(0,0,0, 0.50)",
+				AppbarBackground = "#27272f",
+				AppbarText = "rgba(0,0,0, 0.70)",
+				TextPrimary = "rgba(0,0,0, 0.90)",
+				TextSecondary = "rgba(0,0,0, 0.50)",
+				ActionDefault = "#adadb1",
+				ActionDisabled = "rgba(255,255,255, 0.26)",
+				ActionDisabledBackground = "rgba(255,255,255, 0.12)",
+				DrawerIcon = "rgba(255,255,255, 0.50)"
+			}
+		};
+
+	private readonly MudTheme _darkTheme = new MudTheme()
+		{
+			Palette = new PaletteDark()
+			{
+				//Primary #4a69bd
+				//Secondary #A2B2EE
+				//Accent #7187CC
+
+				Black = "#2E3239",
+				Background = "#26292B",
+				//BackgroundGrey = "#27272f",
+				Primary = "#5F7ADB",
+				PrimaryDarken = "#243461",
+				Secondary = "#fff",
+				Surface = "#353b48",
+				DrawerBackground = "#27272f",
+				DrawerText = "rgba(255,255,255, 0.50)",
+				AppbarBackground = "#27272f",
+				AppbarText = "rgba(255,255,255, 0.70)",
+				TextPrimary = "rgba(255,255,255, 0.90)",
+				TextSecondary = "rgba(255,255,255, 0.50)",
+				ActionDefault = "#adadb1",
+				ActionDisabled = "rgba(255,255,255, 0.26)",
+				ActionDisabledBackground = "rgba(255,255,255, 0.12)",
+				DrawerIcon = "rgba(255,255,255, 0.50)"
+			}
+		};
+
+
+	protected override void OnInitialized()
+	{
+		AppPreferences.ChangeTheme += SetTheme;
+		AppPreferences.IsDarkTheme = Preferences.Default.Get("isDark", false);
+		base.OnInitialized();
+	}
+
+
+	private void SetTheme()
+	{
+		_Theme = AppPreferences.IsDarkTheme ? _darkTheme : _lightTheme;
+		//_Theme = Preferences.Default.Get("isDark", false) ? _darkTheme: _lightTheme;
+		StateHasChanged();
+	}
+}

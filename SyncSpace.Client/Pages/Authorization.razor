@@ -1,0 +1,73 @@
+﻿@page "/"
+@inject NavigationManager Navigation
+@inject IUserInformation AuthorizedUser
+
+@using Microsoft.AspNetCore.Components.Routing
+@using System.Text.RegularExpressions
+@using System.ComponentModel.DataAnnotations
+@using System.Resources
+@using SyncSpace.Client.Services;
+@using SyncSpace.Database.Contexts
+@using SyncSpace.Database.Entities
+@using Microsoft.EntityFrameworkCore
+@using System.Net.NetworkInformation
+@using MudBlazor
+
+<div class="container">
+    <MudGrid>
+        <MudItem>
+            <MudTextField @bind-Value="_Email" Label="Email" Required="true" RequiredError="Email is required!"
+                          Validation="@(new EmailAddressAttribute() {ErrorMessage = "The email address is invalid"})" />
+            <MudTextField @bind-Value="_Password" Label="Password" Required="true" InputType="InputType.Password" />
+            <div class="button-row">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" DisableElevation="true" OnClick="SendRequest" class="button">Log in</MudButton>
+                <MudCheckBox @bind-Checked="@_IsRememberPassword" Color="Color.Primary" Label="Remember password" class="checkbox"></MudCheckBox>
+            </div>
+        </MudItem>
+    </MudGrid>
+</div>
+
+<style>
+    .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin-top: -50px; /* Устанавливаем высоту контейнера на весь экран */
+    }
+
+    .mud-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin: 20px;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.3);
+        max-width: 400px;
+        width: 100%;
+    }
+
+    .mud-text-field {
+        width: 100%;
+    }
+
+    .button-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+    }
+
+    .button {
+        width: 55%;
+    }
+
+    .checkbox {
+        width: 45%;
+    }
+
+</style>
+

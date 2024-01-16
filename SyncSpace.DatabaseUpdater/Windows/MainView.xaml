@@ -1,0 +1,124 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<rxui:ReactiveContentPage x:Class="SyncSpace.DatabaseUpdater.Windows.MainView"
+                          xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                          xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                          xmlns:local="clr-namespace:SyncSpace.DatabaseUpdater.Windows"
+                          xmlns:rxui="clr-namespace:ReactiveUI.Maui;assembly=ReactiveUI.Maui"
+                          x:DataType="local:MainViewModel"
+                          x:TypeArguments="local:MainViewModel"
+                          Background="{StaticResource PrimaryBrush}">
+    <ScrollView>
+        <Grid Padding="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Label Margin="5"
+                   Text="Сервер"
+                   VerticalOptions="Center" />
+
+            <Entry x:Name="HostEntry"
+                   Grid.Column="1"
+                   Margin="5" />
+
+            <Label Grid.Row="1"
+                   Margin="5"
+                   Text="Порт"
+                   VerticalOptions="Center" />
+
+            <Entry x:Name="PortEntry"
+                   Grid.Row="1"
+                   Grid.Column="1"
+                   Margin="5" />
+
+            <Label Grid.Row="2"
+                   Margin="5"
+                   Text="База данных"
+                   VerticalOptions="Center" />
+
+            <Entry x:Name="DatabaseEntry"
+                   Grid.Row="2"
+                   Grid.Column="1"
+                   Margin="5" />
+
+            <Label Grid.Row="3"
+                   Margin="5"
+                   Text="Имя пользователя"
+                   VerticalOptions="Center" />
+
+            <Entry x:Name="UserNameEntry"
+                   Grid.Row="3"
+                   Grid.Column="1"
+                   Margin="5" />
+
+            <Label Grid.Row="4"
+                   Margin="5"
+                   Text="Пароль"
+                   VerticalOptions="Center" />
+
+            <Entry x:Name="PasswordEntry"
+                   Grid.Row="4"
+                   Grid.Column="1"
+                   Margin="5"
+                   IsPassword="True" />
+
+            <Label Grid.Row="5"
+                   Margin="5"
+                   Text="Целевая миграция"
+                   VerticalOptions="Center" />
+
+            <Picker x:Name="MigrationPicker"
+                    Grid.Row="5"
+                    Grid.Column="1"
+                    Margin="5"
+                    HorizontalOptions="Fill" />
+
+            <Label Grid.Row="6"
+                   Margin="5"
+                   Text="Результат"
+                   VerticalOptions="Center" />
+
+            <Label x:Name="ResultLabel"
+                   Grid.Row="6"
+                   Grid.Column="1"
+                   Margin="5" />
+
+            <Grid Grid.Row="7"
+                  Grid.ColumnSpan="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackLayout Orientation="Horizontal"
+                             VerticalOptions="End">
+                    <CheckBox x:Name="ConfirmCheckBox"
+                              VerticalOptions="Center" />
+
+                    <Label HorizontalOptions="StartAndExpand"
+                           Text="Я уведомлен, что рекомендуется сделать резервную копию, обновляемой базы данных."
+                           VerticalOptions="Center" />
+                </StackLayout>
+
+                <Button x:Name="UpdateDatabaseButton"
+                        Grid.Column="1"
+                        Margin="5"
+                        HorizontalOptions="End"
+                        Text="Обновить базу данных"
+                        VerticalOptions="End" />
+            </Grid>
+        </Grid>
+    </ScrollView>
+</rxui:ReactiveContentPage>

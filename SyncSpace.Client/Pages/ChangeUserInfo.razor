@@ -1,0 +1,113 @@
+﻿@page "/userInfo"
+@inject NavigationManager Navigation
+@inject IUserInformation AuthorizedUser
+@using System;
+@using System.Collections.Generic;
+@using System.Drawing;
+@using System.IO;
+@using QRCoder;
+@using System.Text.RegularExpressions
+@using System.ComponentModel.DataAnnotations
+@using SyncSpace.Client.Services;
+@using SyncSpace.Core.Controls;
+
+<div class="container">
+
+    <button @onclick="ChangeQrCodeState" style="pointer-events:@(_IsQrCodeOpen ? "initial":"none");position:fixed; top: 0;left: 0; width: 100%; height: 100%; z-index:1;" />
+    <div class="containerRow" style="filter:@(_IsQrCodeOpen ? "blur(5px)":"blur(0)");">
+        <MudButton DisableElevation="true" Variant="Variant.Filled" OnClick=" ()=> OpenMap()">
+            <MudIcon Icon="@Icons.Material.Filled.ArrowBack" />
+        </MudButton>
+        <MudButton DisableElevation="true" Style="position:absolute;right:0" Variant="Variant.Filled" OnClick=" ()=> SaveChangeUserInfo()">
+            <MudIcon Icon="@Icons.Material.Filled.Check" />
+        </MudButton>
+    </div>
+    <div style="margin: 0 auto;max-height:140px">
+        <img style="filter:@(_IsQrCodeOpen ? "blur(5px)":"blur(0)")" src="@AuthorizedUser.User.Avatar.Source" class="circle-image">
+        <div style="position: relative;top: -60px;right:@(_IsQrCodeOpen ? "-230px;":"-100px;");transform:@(_IsQrCodeOpen?"scale(5)":"scale(1)");transition:0.5s; z-index: 1;">
+            <div class="qr-container">
+                <div class="circle" style="background-color: @(_IsQrCodeOpen ? "transparent": "white");">
+                    <button style="position: absolute;  margin: auto;top: 0;right: 0;bottom: 0;left: 0; z-index: 1;" @onclick="ChangeQrCodeState">
+                        <SyncSpace.Core.Controls.QrCode @ref=@_QrCode></SyncSpace.Core.Controls.QrCode>
+                    </button>
+                </div>
+
+			</div>
+		</div>
+	</div>
+	<div style="z-index:0">
+
+		<div style="padding-bottom: 10px;margin: 0 auto;font-size:30px;filter:@(_IsQrCodeOpen ? "blur(5px)":"blur(0)")">
+			@AuthorizedUser.User.Name
+		</div>
+		<div style="filter:@(_IsQrCodeOpen ? "blur(5px)":"blur(0)")">
+			<MudPaper Class="container">
+				<MudTextField T="string"  @bind-Value="@AuthorizedUser.User.Name" Label="Name" DisableUnderLine="true" Placeholder="Input Name" Lines="0" Variant="Variant.Text" Margin="Margin.Dense" />
+				
+				<MudTextField T="string" @bind-Value="@AuthorizedUser.User.Email" DisableUnderLine="true" Lines="0" Variant="Variant.Text" Margin="Margin.Dense" Label="Email" Placeholder="Input Email" Required="true" RequiredError="Email is required!" Validation="@(new EmailAddressAttribute() {ErrorMessage = "The email address is invalid"})" />
+				<MudDatePicker Label="Birthday" @bind-Date="@AuthorizedUser.User.BirthDay" DisableToolbar="true" Placeholder="Choose date" Variant="Variant.Text" Margin="Margin.Dense" />
+			</MudPaper>
+		</div>
+	</div>
+</div>
+<style>
+    .container {
+        display: flex;
+        flex-direction: column;
+        padding: 5px;
+    }
+    container ~ div{
+padding: 10px;
+    }
+
+	.containerRow {
+		display: flex;
+		flex-direction: row;
+		padding: 10px;
+		z-index: 0;
+	}
+
+	.mud-input > input.mud-input-root, div.mud-input-slot.mud-input-root {
+		padding: 0px !important;
+	}
+
+	.mud-button {
+		padding: 15px;
+		height: 48px;
+		min-width: 30px;
+	}
+
+	.mud-button-filled {
+		background-color: transparent !important;
+	}
+
+	.circle-image {
+		display: inline-block;
+		border-radius: 50%;
+		overflow: hidden;
+		width: 160px;
+		height: 160px;
+	}
+
+    .qr-container {
+        position: relative; /
+        display: inline-block; /* Это позволит элементу div охватывать только ту область, которую занимает элемент QrCode */
+        overflow: hidden; /* Это скроет части круга, выходящие за границы элемента QrCode */
+        width: 70px; /* Установите ширину элемента */
+        height: 70px; /* Установите высоту элемента */
+        z-index: 1;
+    }
+
+		.qr-container .circle {
+			position: absolute; /* Это позволит нам разместить круг поверх элемента QrCode */
+			top: 50%; /* Поместите круг на вертикальную середину элемента qr-container */
+			left: 50%; /* Поместите круг на горизонтальную середину элемента qr-container */
+			transform: translate(-50%, -50%); /* Это позволит центрировать круг точно по центру элемента qr-container */
+			border-radius: 50%; /* Установите радиус скругления равным 50%, чтобы получить круг */
+			/* Установите белый цвет фона */
+			width: 80%; /* Установите ширину круга */
+			height: 80%; /* Установите высоту круга */
+			z-index: 1;
+		}
+
+</style>

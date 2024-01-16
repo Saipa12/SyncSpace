@@ -1,0 +1,273 @@
+/* SCROLLBAR */
+
+::-webkit-scrollbar-track {
+    width: 3px !important;
+}
+
+::-webkit-scrollbar {
+    width: 4px !important;
+}
+
+
+
+/* MudButton */
+.mud-button {
+    border-radius: 12px;
+    min-width: unset;
+}
+
+
+
+/*  MudSwitch  */
+
+.mud-switch-span {
+    padding: 8px !important;
+}
+
+.mud-switch-track {
+    opacity: 1 !important;
+    border-radius: 10px !important;
+    background: var(--mud-palette-primary) !important;
+}
+
+.mud-switch-thumb-medium {
+    width: 18px !important;
+    height: 18px !important;
+    margin: 1px !important;
+    border-radius: 10px !important;
+}
+
+.mud-input-control:active .mud-switch-thumb-medium {
+    margin: 3px !important;
+    width: 14px !important;
+    height: 14px !important;
+}
+
+.mud-switch-thumb-medium {
+    transition: 0.2s;
+}
+
+.mud-switch-input:focus {
+    background: red !important;
+}
+
+.mud-switch-input:checked ~ .mud-switch-track {
+    background: red !important;
+}
+
+
+
+/* USER ICON */
+
+.user-icon-40 {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+
+
+/* MudInput */
+
+.mud-input{
+    line-height: 1;
+}
+
+.mud-input-control {
+    margin: 12px 0 !important;
+}
+
+.mud-input-slot{
+    padding-top: unset!important;
+    padding-bottom: 0!important;
+}
+
+.mud-input-control-input-container {
+    background-color: #8080801a;
+    border-radius: 10px;
+    padding: 0 8px;
+}
+
+.mud-input-control > .mud-input-control-input-container > div.mud-input.mud-input-text {
+    margin: 8px 0;
+}
+
+.mud-input-label-inputcontrol {
+    top: unset;
+    left: unset;
+}
+
+.mud-input-label {
+    top: -35%;
+}
+
+.mud-input-underline:after {
+    background: none;
+    display: none;
+}
+
+.mud-input-underline:before {
+    background: none;
+    display: none;
+}
+
+
+
+/* MudSelect */
+
+.mud-select .mud-input-control-input-container{
+    background: none;
+}
+
+.mud-popover {
+    transition-duration: 150ms !important;
+}
+
+.mud-list-item:hover {
+    background: #00000018;
+}
+
+.mud-list-item:active{
+    background: #00000033;
+}
+
+
+
+/* MudPaper*/
+
+.mud-paper{
+    background: var(--mud-palette-background)!important;
+}
+
+
+
+/* MudCarousel */
+
+.mud-carousel.mud-carousel-secondary{
+    color: var(--mud-palette-primary);
+}
+
+    .mud-carousel.mud-carousel-secondary button {
+        padding: 6px;
+    }
+
+    .mud-carousel.mud-carousel-secondary button[tabindex='3'] .mud-icon-root {
+        font-size: 0.8rem !important;
+    }
+
+    .mud-carousel.mud-carousel-secondary button[tabindex='4'] .mud-icon-root {
+        font-size: 0.8rem !important;
+    }
+
+
+
+/* ONLINE STATUS CONTROL */
+.online-status {
+    width: 30%;
+    height: 30%;
+    position: absolute;
+    border-radius: 100px;
+    top: 0;
+    pointer-events: none;
+    padding: 5%;
+}
+
+.online-status-inner {
+    width: 100%;
+    height: 100%;
+    background: white;
+    border-radius: 30px;
+}
+
+
+
+/* BATTERY CONTROL */
+
+.battery {
+    padding: 2%;
+    overflow: hidden;
+    background: black;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    border-radius: 16px;
+    height: 22%;
+    width: 40%;
+    pointer-events: none;
+}
+
+.battery-charge {
+    display: flex;
+    background-color: black;
+    height: 100%;
+    transition: 1s;
+    border-radius: 16px;
+}
+
+.battery-text {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    text-align: center;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    font-weight: bold;
+    color: grey;
+}
+
+.battery-contact {
+    background: black;
+    border-radius: 5px;
+    position: absolute;
+    top: 50%;
+    left: 80%;
+    height: 5px;
+    width: 5px;
+}
+
+
+
+/* BottomSheetView */
+
+.bottom-sheet {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 0%;
+    background: var(--mud-palette-primary);
+    transition: 0.25s cubic-bezier(0.2, 0.72, 0.14, 1.25);
+    border-radius: 16px 16px 0px 0px;
+    overflow: hidden;
+}
+
+#bottom-sheet-content {
+    position: absolute;
+    top: 48px;
+    left: 0;
+    right: 0;
+    bottom: 0px;
+    overflow-y: auto;
+}
+
+#hover {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 48px;
+}
+
+#hover-decorator {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 36px;
+    height: 8px;
+    border-radius: 6px;
+    transform: translate(-50%, -100%);
+    background: white;
+}

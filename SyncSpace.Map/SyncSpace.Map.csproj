@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components" Version="7.0.3" />
+    <PackageReference Include="Microsoft.JSInterop" Version="7.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SyncSpace.Core\SyncSpace.Core.csproj" />
+    <ProjectReference Include="..\SyncSpace.Database\SyncSpace.Database.csproj" />
+  </ItemGroup>
+
+</Project>

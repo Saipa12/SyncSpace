@@ -1,0 +1,31 @@
+﻿@page "/chats"
+@inject IJSRuntime JSRuntime
+@inject NavigationManager Navigation
+@using Microsoft.AspNetCore.Components;
+@using Microsoft.EntityFrameworkCore;
+@using SyncSpace.Client.Models.Markers;
+@using SyncSpace.Client.Services;
+@using SyncSpace.Database.Contexts;
+@using SyncSpace.Database.Entities;
+@using Db = SyncSpace.Database.Entities;
+
+<h3>Chats</h3>
+
+<MudList>
+    @foreach (Db.User item in Friends)
+    {
+        <MudButton style="justify-content: flex-start; width: 100%;" OnClick="OpenChat">
+            <div style="display: flex;">
+                <img class="user-icon-40" src="@item.Avatar.Source" />
+                <div style="margin-left: 10px; line-height: 1; text-align: initial;">
+                    <div>@item.Name</div>
+                    <div style="line-height: 2;">Last message</div>
+                </div>
+            </div>
+        </MudButton>
+    }
+</MudList>
+
+@code {
+    public void OpenChat() => Navigation.NavigateTo("Chat");
+}

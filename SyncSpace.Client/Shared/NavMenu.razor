@@ -1,0 +1,106 @@
+﻿@*<div class="top-row ps-3 navbar navbar-dark">
+	<div class="container-fluid">
+		<a class="navbar-brand" href="">window.location.href</a>
+		<button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+	</div>
+</div>
+*@
+@*<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">*@
+<nav class="bottom-navbar">
+	<NavLink class="nav-link" href="friends">
+		<MudIcon Icon="@CustomIcons.Friends" />Friends
+	</NavLink>
+	<NavLink class="nav-link" href="chats" Match="NavLinkMatch.All">
+		<MudIcon Icon="@CustomIcons.Chat" />Chats
+	</NavLink>
+	<NavLink class="nav-link" href="mainMap">
+		<MudIcon Icon="@CustomIcons.Map" />Map
+	</NavLink>
+	<NavLink class="nav-link" href="userInfo">
+		<MudIcon Icon="@CustomIcons.User" />User
+	</NavLink>
+</nav>
+@*</div>*@
+
+<style>
+	.bottom-navbar {
+		position: fixed;
+		display: flex;
+		grid-auto-flow: column;
+		box-shadow: 0px 0px 16px #00000085;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		align-items: baseline;
+		justify-items: center;
+		background: var(--mud-palette-primary);
+		border-radius: 16px 16px 0 0;
+		padding: 6px;
+		z-index: 66;
+	}
+
+	.nav-link {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		font-size: 0.7rem;
+		width: 25%;
+		margin: 0 4px;
+		text-decoration: none;
+		color: #fff;
+		border-radius: 30px;
+		background: none;
+		transition: .2s;
+		overflow: hidden;
+	}
+
+		.nav-link > .oi {
+			width: unset;
+			margin-bottom: 3px !important;
+			font-size: 1.1rem;
+		}
+
+		.nav-link:focus {
+			color: #fff;
+		}
+
+		.nav-link:hover {
+			color: var(--mud-palette-primary-darken);
+			background: #00000011;
+		}
+
+		.nav-link:active {
+			color: var(--mud-palette-primary-darken);
+			background: #00000022;
+			transform: scale(0.8);
+		}
+
+		.bottom-navbar .active {
+			color: var(--mud-palette-primary-darken);
+			font-weight: bold;
+		}
+
+
+
+
+	@@media (min-width: 0) {
+		.collapse {
+			display: block !important;
+		}
+	}
+
+</style>
+
+@code {
+	private bool collapseNavMenu = true;
+
+	private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+	private void ToggleNavMenu()
+	{
+		//collapseNavMenu = !collapseNavMenu;
+	}
+}

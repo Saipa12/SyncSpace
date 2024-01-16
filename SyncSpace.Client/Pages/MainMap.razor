@@ -1,0 +1,230 @@
+﻿@page "/mainMap"
+@inject IJSRuntime JSRuntime
+@inject NavigationManager Navigation
+@inject IUserInformation AuthorizedUser
+@inject IMapLocation MapLocation
+@using Microsoft.AspNetCore.Components;
+@using Microsoft.EntityFrameworkCore;
+@using SyncSpace.Client.Models.Markers;
+@using SyncSpace.Client.Services;
+@using SyncSpace.Database.Contexts;
+@using SyncSpace.Database.Entities;
+@using SyncSpace.Map;
+@using SyncSpace.Map.Factories.Markers;
+@using System.Reflection;
+@using T = System.Timers;
+@using Db = SyncSpace.Database.Entities;
+@using SyncSpace.Client.Shared;
+@using SyncSpace.Core.Controls;
+<div>
+
+	<Map @ref="_MapRef" MapOptions="@_MapOptions"></Map>
+	<div id="@_MapOptions.DivId"></div>
+
+	<MudCarousel @ref="_Carousel" id="editor-carousel" BulletsColor="Color.Secondary" ItemsSource="@_Areas" Class="mud-width-full" Style="@("height:90px;" + (IsAreaEditorVisible ? string.Empty : "Display:none!important"))" SelectedIndexChanged="OnCarouselItemChanged" ShowArrows="true" ShowBullets="true" EnableSwipeGesture="true" AutoCycle="false" TData="object">
+		<ItemTemplate>
+			<div class="d-flex flex-column flex-column justify-center">
+				<MudIcon Color="Color.Primary" Class="mx-auto" Icon="@Icons.Custom.Brands.MudBlazor" Size="@Size.Medium"></MudIcon>
+				<MudText Color="Color.Primary" Align="@Align.Center" Class="mx-auto">@(((Area)context).AreaName)</MudText>
+				</div>
+			</ItemTemplate>
+
+			@*		@{
+		//foreach (Area area in _Areas)
+		//{
+		//<MudCarouselItem Color="@Color.Primary">@area.AreaName.ToString()</MudCarouselItem>
+		//}*@
+
+		</MudCarousel>
+		@{
+		if (_Areas.Any() && _Carousel.SelectedIndex == -1 && IsAreaEditorVisible)
+			_Carousel.SelectedIndex = 0;
+	}
+	<div class="top-right-control">
+		<MudFab Color="Color.Primary" IconColor="Color.Secondary" Class="settings-btn" @bind-hidden="IsAreaEditorVisible" OnClick="OpenSettings" StartIcon="@CustomIcons.Settings" />
+		<MudFab Color="Color.Primary" IconColor="Color.Secondary" Style="@(IsAreaEditorVisible ? string.Empty : "display:none!important")" @onclick="AddVertex" StartIcon="@Icons.Material.Filled.Add" />
+		<MudFab Color="Color.Primary" IconColor="Color.Secondary" Style="@(IsAreaEditorVisible ? string.Empty : "display:none!important")" @onclick="RemoveVertex" StartIcon="@Icons.Material.Filled.Delete" />
+		<MudFab Color="Color.Primary" IconColor="Color.Secondary" Style="@(IsEditing ? string.Empty : "display:none!important")" @onclick="DefaultMode" StartIcon="@Icons.Material.Filled.Cancel" />
+	</div>
+	<MudFab Style="position: absolute; left: 8px; top: 8px; z-index: 2;" Color="Color.Primary" IconColor="Color.Secondary" Class="editor-btn" OnClick="ChangeAreaEditorVisibility" StartIcon="@CustomIcons.Area" />
+	<div class="top-shadow"></div>
+	<div class="address-bar-container">
+		<div class="address-bar"></div>
+	</div>
+
+	<div class="container-back">
+		<MudFab Color="Color.Primary" IconColor="Color.Secondary" class="control-btn zoom-in" @bind-hidden="IsAreaEditorVisible" @onclick="ZoomIn" StartIcon="@CustomIcons.ZoomIn"></MudFab>
+		<MudFab Color="Color.Primary" IconColor="Color.Secondary" class="control-btn zoom-out" @bind-hidden="IsAreaEditorVisible" @onclick="ZoomOut" StartIcon="@CustomIcons.ZoomOut"></MudFab>
+	</div>
+
+	<MudFab Color="Color.Primary" IconColor="Color.Secondary" class="find-me" @bind-hidden="IsAreaEditorVisible" @onclick="FindMe" StartIcon="@CustomIcons.Location"></MudFab>
+	<div>
+		@if (!IsAreaEditorVisible)
+		{
+			//<div class="bottom-navbar">
+			//	<MudFab Color="Color.Primary" IconColor="Color.Secondary" @bind-hidden="IsAreaEditorVisible" OnClick="OpenChats" StartIcon="@Icons.Material.Filled.Chat" />
+			//	<!--MudFab Color="Color.Primary" @bind-hidden="IsAreaEditorVisible" OnClick="OpenFriends" StartIcon="@Icons.Material.Filled.SupervisorAccount" /-->
+			//	<MudFab Class="central-btn" Color="Color.Primary" IconColor="Color.Secondary" @bind-hidden="IsAreaEditorVisible" OnClick="FindMe" style="width: 80px; height: 80px; position: absolute; transform: translateY(-6px); font-size: 3em;" StartIcon="@Icons.Material.Filled.PersonPin" />
+			//	<MudFab Color="Color.Primary" IconColor="Color.Secondary" @bind-hidden="IsAreaEditorVisible" OnClick="OpenChangeUserInfo" StartIcon="@Icons.Material.Filled.AccountCircle" />
+			//</div>
+		}
+
+		<MudButton Color="Color.Primary" Variant="Variant.Filled" Style="@("height:30px; position: absolute; bottom: 50px; left: 0; right: 0; margin: auto 0;" + (IsAreaEditorVisible ? string.Empty : "Display:none!important"))" OnClick="async ()=> await SaveZone()">Сохранить</MudButton>
+
+
+		<BottomSheetView @ref="_BottomSheet">
+			<div>
+				<MudButton style="position: absolute; right:0;" OnClick="async ()=> await _BottomSheet.CloseExpander()">
+					<MudIcon Icon="@Icons.Material.Filled.Close" />
+				</MudButton>
+			</div>
+			<div style="position:absolute">
+				<div>
+					<h5>Здесь же появится когда-нибудь что-то нормальное, да?</h5>
+					<MudText>@_MarkerUserName</MudText>
+				</div>
+				<div style="position:absolute">
+					<MudAvatar Color="Color.Primary" Variant="Variant.Outlined" Image=@_UserAvatar></MudAvatar>
+					<div style="position: absolute;top: 80%;left: 50%;height: 15px;padding: 3px;width: 50px;">
+						<div style="background:black;border-radius: 5px;position: absolute;top: 15%;left: 2%;height: 15px;width: 40px;">
+							<div class="battery" style="font-weight: 500;border-radius: 3px;height: 10px;left: 5%;">
+							</div>
+							<text style="position: absolute;left: 35%;top:10%;font-size: 9px;color: grey;">@_UserBatteryLvl</text>
+						</div>
+						<div style="background:black;border-radius: 5px;position: absolute;top: 50%;left: 80%;height:5px;width: 5px;">
+						</div>
+					</div>
+				</div>
+			</div>
+		</BottomSheetView>
+	</div>
+</div>
+
+
+<style>
+	.address-bar-container {
+		position: absolute;
+		top: 5px;
+		left: 50px;
+		right: 50px;
+		height: 40px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		pointer-events: none;
+		overflow: visible;
+	}
+
+	.address-bar {
+		text-shadow: 0px 5px 12px black;
+		color: white;
+		text-align: center;
+		font-weight: bold;
+	}
+
+	.top-shadow {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		height: 50px;
+		background: linear-gradient(#000000bb, #00000000);
+		pointer-events: none;
+		z-index: 100;
+	}
+
+	#map-id {
+		height: 100%;
+		width: 100%;
+		position: fixed;
+		bottom: 0;
+	}
+
+	.map-bottom, map-right {
+		display: none;
+	}
+
+	.control-btn {
+		padding: 6px;
+		margin: 2px 0;
+		background: var(--mud-palette-primary);
+		height: 38px;
+		width: 38px;
+		border-radius: 50%;
+	}
+
+	.find-me {
+		position: fixed;
+		bottom: 100px;
+		left: 50%;
+		transform: translateX(-50%);
+	}
+
+	//.bottom-navbar {
+		// position: fixed;
+		// display: grid;
+		// grid-auto-flow: column;
+		// box-shadow: 0px 0px 16px #00000085;
+		// bottom: 10px;
+		// left: 0;
+		// align-items: baseline;
+		// right: 0;
+		// justify-items: center;
+		// background: var(--mud-palette-background);
+		// margin: 8px;
+		// gap: 80px;
+		// border-radius: 24px;
+		// padding: 6px;
+		//
+	}
+
+	.central-btn .mud-icon-size-medium {
+		font-size: 3rem;
+	}
+
+	.mud-width-full {
+		position: relative;
+	}
+
+	.container-back {
+		display: flex;
+		flex-direction: column;
+		position: fixed;
+		bottom: 40vh;
+		right: 5px;
+	}
+
+	.settings-btn {
+		height: 36px;
+		width: 36px;
+	}
+
+	.editor-btn {
+		height: 36px;
+		width: 36px;
+	}
+
+	.top-right-control {
+		position: relative;
+		float: right;
+		display: grid;
+		grid-auto-flow: row;
+		grid-gap: 8px;
+		padding: 8px;
+		z-index: 2;
+	}
+
+	.mud-carousel {
+		width: auto !important;
+		border-radius: 24px;
+		margin: 6px !important;
+		z-index: 2;
+		background: var(--mud-palette-background);
+	}
+
+	.mud-carousel-item {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+</style>

@@ -1,0 +1,120 @@
+﻿@page "/chat"
+@inject NavigationManager Navigation
+
+@using SyncSpace.Client.Shared;
+
+<div class="header">
+	<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" OnClick="OpenMap"></MudIconButton>
+	<MudIcon class="user-icon" Icon="@CustomIcons.User"></MudIcon>
+	<div class="user-info">
+		<div class="user-name">UserName</div>
+		<div class="user-status">
+			<MudIcon class="user-status-circle" Color="Color.Success" Icon="@Icons.Material.Filled.Circle">online</MudIcon>
+			<div class="user-status-text">online</div>
+		</div>
+	</div>
+</div>
+<div class="content">
+	<div class="messages-container">
+		@for(int i = 0; i < 20; i++)
+		{
+			<div class="message-bubble message-out">Привет, чёрт @(i+1)!</div>
+			<div class="message-bubble message-in">И тебе, чёрт @i!</div>
+		}
+	</div>
+	<div class="message-inputbox">
+		<MudTextField Placeholder="Message" T="string"></MudTextField>
+		<MudFab class="send" Color="Color.Primary" StartIcon="@CustomIcons.Send" OnClick="SendMessage"></MudFab>
+	</div>
+</div>
+
+<style>
+	.content {
+		position: fixed;
+		top: 55px;
+		bottom: 70px;
+		left: 0;
+		right: 0;
+	}
+
+	.header {
+		height: 50px;
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		display: flex;
+		align-items: center;
+		background: var(--mud-palette-primary);
+	}
+
+	.user-info {
+		display: flex;
+		flex-direction: column;
+		margin-left: 10px;
+		color: #fff;
+	}
+
+	.user-icon{
+		width: 40px;
+		height: 40px;
+	}
+
+	.user-status{
+		display: flex;
+		align-items: center;
+		gap: 3px;
+		font-size: 12px;
+		line-height: 0;
+	}
+
+	.user-status-circle{
+		width: 12px;
+		height: 12px;
+	}
+
+	.messages-container {
+		overflow: auto;
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 60px;
+	}
+
+	.message-inputbox {
+		padding: 0 4px;
+		display: flex;
+		align-items: center;
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		right: 0;
+	}
+
+	.mud-input-control {
+		padding-right: 4px!important;
+	}
+
+	.send {
+		width: 35px;
+		height: 35px;
+	}
+
+	.message-bubble {
+		background: var(--mud-palette-primary);
+		color: #fff;
+	}
+
+	.message-out {
+		border-radius: 16px 8px 16px 16px;
+		margin: 0 6px 10px 40%;
+		padding: 6px 12px;
+	}
+
+	.message-in {
+		border-radius: 16px 8px 16px 16px;
+		margin: 0 40% 10px 6px;
+		padding: 6px 12px;
+	}
+</style>
